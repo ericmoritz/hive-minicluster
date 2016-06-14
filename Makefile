@@ -1,12 +1,19 @@
-all: ${HADOOP_HOME} ${HIVE_HOME}
+all: ${HADOOP_HOME} ${HIVE_HOME} setup
+
+
 
 ${HADOOP_HOME}:
 	mkdir -p {cache,opt}
 	curl -L -z cache/hadoop.tar.gz -o cache/hadoop.tar.gz ${HADOOP_URL}
-	tar -C opt -x -z -f cache/hadoop.tar.gz
-	@make setup-hadoop
+	tar -C opt -xzf cache/hadoop.tar.gz
 
-setup-hadoop:
+${HIVE_HOME}:
+	mkdir -p cache
+	curl -L -z cache/hive.tar.gz -o cache/hive.tar.gz ${HIVE_URL}
+	tar -C opt -xzf cache/hive.tar.gz
+
+
+setup:
 	${HADOOP_HOME}/bin/hdfs namenode -format
 
 	cp src/main/resources/hadoop/* ${HADOOP_HOME}/etc/hadoop/
@@ -18,21 +25,15 @@ setup-hadoop:
 	${HADOOP_HOME}/bin/hdfs dfs -mkdir -p /user
 	${HADOOP_HOME}/bin/hdfs dfs -mkdir -p /user/${USER}
 
-	@make stop-hdfs
-
-${HIVE_HOME}:
-	mkdir -p cache
-	curl -L -z cache/hive.tar.gz -o cache/hive.tar.gz ${HIVE_URL}
-	tar -C opt -xzf cache/hive.tar.gz
-	@make setup-hive
-
-setup-hive:
-	@make start-hdfs
 	${HADOOP_HOME}/bin/hadoop fs -mkdir -p    /tmp
 	${HADOOP_HOME}/bin/hadoop fs -mkdir -p    /user/hive/warehouse
 	${HADOOP_HOME}/bin/hadoop fs -chmod g+w   /tmp
 	${HADOOP_HOME}/bin/hadoop fs -chmod g+w   /user/hive/warehouse
+
 	@make stop-hdfs
+
+clean:
+	rm -rf cache opt
 
 start: start-hdfs start-yarn
 
@@ -50,5 +51,3 @@ stop-hdfs:
 stop-yarn:
 	${HADOOP_HOME}/sbin/stop-yarn.sh
 
-clean:
-	rm -rf cache opt
