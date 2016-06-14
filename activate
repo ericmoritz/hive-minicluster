@@ -1,0 +1,11 @@
+
+MINICLUSTER=/Users/emoritz/Data/Projects/minicluster
+
+export HADOOP_URL="http://mirror.stjschools.org/public/apache/hadoop/common/hadoop-2.5.2/hadoop-2.5.2.tar.gz"
+export HIVE_URL="http://apache.mirrors.lucidnetworks.net/hive/hive-1.0.1/apache-hive-1.0.1-bin.tar.gz"
+
+
+export HADOOP_HOME=${MINICLUSTER}/opt/hadoop-2.5.2
+export HIVE_HOME=${MINICLUSTER}/opt/apache-hive-1.0.1-bin
+export PATH=${HADOOP_HOME}/sbin:${HADOOP_HOME}/bin:${HIVE_HOME}/bin:$PATH
+
